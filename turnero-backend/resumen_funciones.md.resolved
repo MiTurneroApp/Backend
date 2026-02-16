@@ -1,0 +1,93 @@
+# Resumen de Funciones del Backend
+
+Este documento detalla las funciones y endpoints encontrados en el proyecto actual, organizados por archivo.
+
+## 📁 [main.py](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py) (Lógica Principal y Endpoints)
+
+Este archivo contiene la inicialización de la aplicación FastAPI y la definición de los endpoints.
+
+### Autenticación y Utilidades
+
+| Función | Descripción | Parámetros | Retorno |
+| :--- | :--- | :--- | :--- |
+| [verify_password](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#20-26) | Verifica si una contraseña en texto plano coincide con su hash. | `plain_password`, `hashed_password` | `bool` |
+| [get_password_hash](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#27-29) | Genera un hash seguro para una contraseña. | [password](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#20-26) | `str` (hash) |
+| [create_access_token](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#30-35) | Crea un token JWT de acceso. | `data` (dict) | `str` (token codificado) |
+| [get_current_user](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#36-52) | Dependencia para obtener el usuario autenticado actual desde el token. | [token](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#30-35), [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23) | `models.User` |
+
+### Endpoints (Rutas de la API)
+
+#### General
+- **`GET /`** ([read_root](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#65-68))
+  - **Descripción**: Endpoint de prueba para verificar que la API está en línea.
+  - **Retorno**: Mensaje de bienvenida.
+
+#### Servicios (`/services`)
+- **`GET /services`** ([get_services](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#69-75))
+  - **Descripción**: Obtiene la lista de servicios del usuario autenticado.
+  - **Parámetros**: [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23), [current_user](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#36-52).
+- **`POST /services`** ([create_service](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#76-89))
+  - **Descripción**: Crea un nuevo servicio para el usuario autenticado.
+  - **Parámetros**: `name`, `price`, `duration`, [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23), [current_user](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#36-52).
+- **`DELETE /services/{service_id}`** ([delete_service](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#126-134))
+  - **Descripción**: Elimina un servicio específico por ID.
+  - **Parámetros**: `service_id`, [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+
+#### Turnos (`/appointments`)
+- **`GET /appointments`** ([get_appointments](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#90-97))
+  - **Descripción**: Lista los turnos, opcionalmente filtrados por estado ([status](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#115-125)), ordenados por fecha.
+  - **Parámetros**: [status](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#115-125) (opcional), [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+- **`POST /appointments`** ([create_appointment](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#98-114))
+  - **Descripción**: Crea un nuevo turno.
+  - **Parámetros**: `customer_name`, `service_id`, `date_time`, [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+- **`PATCH /appointments/{appointment_id}/status`** ([update_status](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#115-125))
+  - **Descripción**: Actualiza el estado de un turno (ej. confirmado, cancelado).
+  - **Parámetros**: `appointment_id`, [status](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#115-125), [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+
+#### Horarios (`/schedule`)
+- **`GET /schedule`** ([get_schedule](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#142-145))
+  - **Descripción**: Obtiene la configuración de horarios de atención.
+  - **Parámetros**: [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+- **`POST /schedule`** ([update_schedule](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#146-160))
+  - **Descripción**: Actualiza (sobrescribe) los horarios de atención.
+  - **Parámetros**: `schedules` (lista de horarios), [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+
+#### Perfil (`/profile`)
+- **`GET /profile`** ([get_profile](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#168-177))
+  - **Descripción**: Obtiene el perfil de la barbería.
+  - **Parámetros**: [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+- **`POST /profile`** ([update_profile](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#178-194))
+  - **Descripción**: Actualiza o crea el perfil de la barbería.
+  - **Parámetros**: `data` (ProfileSchema), [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+
+#### Usuarios y Autenticación
+- **`POST /register`** ([register_user](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#195-210))
+  - **Descripción**: Registra un nuevo usuario y crea un perfil por defecto.
+  - **Parámetros**: `form_data` (username, password), [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+- **`POST /token`** ([login_for_access_token](file:///c:/Users/nicot/Documents/Backend/turnero-backend/main.py#211-238))
+  - **Descripción**: Endpoint para login. Valida credenciales y devuelve un token de acceso.
+  - **Parámetros**: `form_data`, [db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23).
+
+---
+
+## 📁 [database.py](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py) (Base de Datos)
+
+Maneja la conexión y sesión con la base de datos.
+
+| Función | Descripción |
+| :--- | :--- |
+| [get_db](file:///c:/Users/nicot/Documents/Backend/turnero-backend/database.py#17-23) | Generador (dependency) que crea una nueva sesión de base de datos para cada request y la cierra al finalizar. |
+| `engine` | Instancia del motor de base de datos SQLAlchemy. |
+| `SessionLocal` | Fábrica de sesiones de base de datos. |
+
+---
+
+## 📁 [models.py](file:///c:/Users/nicot/Documents/Backend/turnero-backend/models.py) (Modelos de Datos)
+
+Define las tablas de la base de datos utilizando SQLAlchemy ORM.
+
+- **[User](file:///c:/Users/nicot/Documents/Backend/turnero-backend/models.py#5-15)**: Usuarios del sistema (barberos/administradores).
+- **[Profile](file:///c:/Users/nicot/Documents/Backend/turnero-backend/models.py#16-28)**: Información pública del perfil (nombre de la barbería, bio, etc.).
+- **[Service](file:///c:/Users/nicot/Documents/Backend/turnero-backend/models.py#29-40)**: Servicios ofrecidos (corte, barba, etc.).
+- **[Appointment](file:///c:/Users/nicot/Documents/Backend/turnero-backend/models.py#41-53)**: Turnos agendados.
+- **[Schedule](file:///c:/Users/nicot/Documents/Backend/turnero-backend/models.py#54-65)**: Configuración de horarios de apertura y cierre.
