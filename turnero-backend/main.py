@@ -21,7 +21,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 SECRET_KEY = os.getenv("CLAVE")
 ALGORITHM = os.getenv("ALGORITMO")
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("TIEMPO")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("TIEMPO"))
 HASH_PWWD = os.getenv("HASH_PWW")
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
