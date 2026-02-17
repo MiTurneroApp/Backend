@@ -612,7 +612,7 @@ def register_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session 
     db.add(new_user)
     db.commit()
     db.refresh(new_user)    
-    default_profile = models.Profile(owner_id=new_user.id, name="Negocio Nuevo", slug=f"barberia-{new_user.id}")
+    default_profile = models.Profile(owner_id=new_user.id, name="Negocio Nuevo", slug=f"negocio-{new_user.id}")
     db.add(default_profile)
     db.commit()
     
