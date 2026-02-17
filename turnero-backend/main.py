@@ -776,3 +776,7 @@ def admin_delete_user(user_id: int, db: Session = Depends(get_db), current_admin
     db.delete(user)
     db.commit()
     return {"message": "Usuario eliminado correctamente"}
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
