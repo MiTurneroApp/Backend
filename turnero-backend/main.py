@@ -183,11 +183,11 @@ def update_service(
 def get_public_services(slug: str, db: Session = Depends(get_db)):
     profile = db.query(models.Profile).filter(models.Profile.slug == slug).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Barbería no encontrada")
+        raise HTTPException(status_code=404, detail="Negocio no encontrado")
     
     # VALIDACIÓN: Si el usuario está suspendido, no mostramos nada
     if not profile.owner.is_active:
-        raise HTTPException(status_code=404, detail="Esta barbería se encuentra suspendida")
+        raise HTTPException(status_code=404, detail="Este Negocio se encuentra suspendido")
 
     return db.query(models.Service).filter(models.Service.owner_id == profile.owner_id).all()
 
@@ -236,10 +236,10 @@ def get_appointments(
 def get_public_appointments(slug: str, date: str, db: Session = Depends(get_db)):
     profile = db.query(models.Profile).filter(models.Profile.slug == slug).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Barbería no encontrada")
+        raise HTTPException(status_code=404, detail="Negocio no encontrado")
     
     if not profile.owner.is_active:
-        raise HTTPException(status_code=404, detail="Barbería suspendida")
+        raise HTTPException(status_code=404, detail="Negocio suspendido")
    
     # Parsear la fecha para filtrar por día (YYYY-MM-DD)
     try:
@@ -545,10 +545,10 @@ def update_schedule(schedules: List[ScheduleSchema], db: Session = Depends(get_d
 def get_public_schedule(slug: str, db: Session = Depends(get_db)):
     profile = db.query(models.Profile).filter(models.Profile.slug == slug).first()
     if not profile:
-        raise HTTPException(status_code=404, detail="Barbería no encontrada")
+        raise HTTPException(status_code=404, detail="Negocio no encontrado")
     
     if not profile.owner.is_active:
-        raise HTTPException(status_code=404, detail="Barbería suspendida")
+        raise HTTPException(status_code=404, detail="Negocio suspendido")
 
     return db.query(models.Schedule).filter(models.Schedule.owner_id == profile.owner_id).all()
 
@@ -612,7 +612,7 @@ def register_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session 
     db.add(new_user)
     db.commit()
     db.refresh(new_user)    
-    default_profile = models.Profile(owner_id=new_user.id, name="Barbería Nueva", slug=f"barberia-{new_user.id}")
+    default_profile = models.Profile(owner_id=new_user.id, name="Negocio Nuevo", slug=f"barberia-{new_user.id}")
     db.add(default_profile)
     db.commit()
     
