@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Response
 from sqlalchemy.orm import Session
 import models
 from database import engine, get_db
@@ -18,6 +19,7 @@ import os
 from supabase import create_client, Client
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
+
 
 SECRET_KEY = os.getenv("CLAVE")
 ALGORITHM = os.getenv("ALGORITMO")
@@ -777,6 +779,6 @@ def admin_delete_user(user_id: int, db: Session = Depends(get_db), current_admin
     db.commit()
     return {"message": "Usuario eliminado correctamente"}
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "ok"}
